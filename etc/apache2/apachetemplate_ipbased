@@ -4,8 +4,8 @@
 
 # bu kısım aslında bir defa olsa olur.
 <VirtualHost {webserverip}>
-ServerName {webserverip}
-DocumentRoot /var/www/new
+	ServerName {webserverip}
+	DocumentRoot /var/www/new
 </VirtualHost>
 
 
@@ -23,7 +23,7 @@ DocumentRoot /var/www/new
 
 	php_admin_value open_basedir {ehcpdir}/webmail
 	php_admin_value upload_tmp_dir {ehcpdir}/webmail/data
-	php_admin_value session.save_path {ehcpdir}/webmail/data
+	php_admin_value session.save_path 0;660;{ehcpdir}/webmail/data
 
 </VirtualHost>
 
@@ -45,9 +45,8 @@ DocumentRoot /var/www/new
 
 
 <VirtualHost {webserverip}>
-    ServerName   {domainname}
-    ServerAlias  www.{domainname} {wildcarddomain} # this is changed to *.{domainname} within classapp.php
-	# buraya aliaslar yazilacak..
+	ServerName   {domainname}
+	ServerAlias  www.{domainname} {wildcarddomain} 
 	{aliases}
 		
 	UseCanonicalName Off
@@ -63,10 +62,10 @@ DocumentRoot /var/www/new
 	# this is pear compatible:
 	php_admin_value open_basedir "{homedir}:/usr/share/php:/usr/share/pear"
 	php_admin_value upload_tmp_dir {homedir}/phptmpdir
-	php_admin_value session.save_path {homedir}/phptmpdir
+	php_admin_value session.save_path 0;660;{homedir}/phptmpdir
 
 	AccessFileName .htaccess
-	    
+		
 
 	{customhttp}
 

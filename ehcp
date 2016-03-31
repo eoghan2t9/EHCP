@@ -4,6 +4,7 @@
 
 
 
+log="$2"
 echo
 echo
 
@@ -15,13 +16,30 @@ show_ehcp(){
 
 
 ehcp_start(){
+	echo "Your OS info:"
+	cat /etc/*ele*
+	
+	#Not used
+	#echo "starting ehcp_daemon.py"
+	#nohup /etc/init.d/ehcp_daemon.py >> /var/log/ehcp.log 2>&1 & 
 	echo "starting ehcp.."
-	echo "starting ehcp_daemon.py"
-	nohup /etc/init.d/ehcp_daemon.py >> /var/log/ehcp.log 2>&1 & 
 	
 	cd /var/www/new/ehcp
+
+	if [ -f path ] ; then # when running inside cron, we need default path. this path variable is filled when installing, in install.sh
+		export PATH=`cat path`
+	else
+		echo "path file NOT FOUND, ehcp may not work correctly in crontab..."
+	fi
+
+
 	./ehcpdaemon.sh
 	show_ehcp
+
+	if [ "$log" == "log" ] ; then
+		echo "log gosteriliyor"
+		tail -f /var/log/ehcp.log
+	fi
 		
 
 }

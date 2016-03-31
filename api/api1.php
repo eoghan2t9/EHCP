@@ -1,4 +1,5 @@
-<?
+<?php
+
 # ehcp.net: example, add domain to existing paneluser (who has ftp already)
 # Easy Hosting Control Panel (ehcp)
 
@@ -14,9 +15,9 @@ $app->activeuser=$panelusername;
 $ret=$app->addDomainDirectToThisPaneluser($domainname,$selfftp);
 
 if($ret){
-    print "Success";
+    echo "Success";
 } else {
-    print $app->output;
+    echo $app->output;
 } 
 
 echo "($ret)";

@@ -3,7 +3,7 @@
 
 // Ver. 1.129.5. ehcp
 // .3 ve .4 e gore birkac fonksiyon eklendi. buildoption2 gibi.
-// baz duzeltmeler de yapld. 
+// bazı duzeltmeler de yapıldı.
 
 //
 
@@ -11,11 +11,11 @@ $clientip = getenv ("REMOTE_ADDR");
 if(substr($clientip,0,4)=="65.54") {die();};
 
 // if($clientip=="65.54.188.109") exit; // saldiri oldu
-// serverda mysql extension gidince aa�daki ie yaryor..
+// serverda mysql extension gidince aşağıdaki işe yarıyor..
 
 if(!function_exists("mysql_connect"))
 	{
-    echo "php mysql extension is not installed.... this is a serious problem. reinstall ehcp or php-mysql";
+    echo "php mysql extension is not installed.... this is a serious problem. reinstall ehcp or php-mysql; if you just installed webserver/php, try to restart webserver, php, php-fpm";
     };
 
 GLOBAL $confdir,$ortam;
@@ -80,7 +80,7 @@ $alansayisi=count($alan);
                 };
         }
 		for ($i=0;$i<count($extra);$i++)$result2.="$th&nbsp;</th>";
-		
+
         $result2.="</tr>\n ";
         return $result2;
 }
@@ -146,7 +146,7 @@ function kayitsayisi2($tablo,$filtre) {
 	};
 };
 
-function buildquery3($select,$filtre,$orderby,$baslangic,$satirsayisi){ // v1.0
+function buildquery3($select,$filtre,$sirala='',$baslangic=0,$satirsayisi=0){ // v1.0
 // buildquery2 den farki limit
     GLOBAL $dbtype;
 
@@ -158,9 +158,9 @@ function buildquery3($select,$filtre,$orderby,$baslangic,$satirsayisi){ // v1.0
 	if($sirala<>"") {
 	    $res.=" order by $sirala";
 	};
-	
+
 	if($satirsayisi>0)$res.=" limit $baslangic, $satirsayisi";
-	
+
     return $res;
 }
 
@@ -232,7 +232,7 @@ if($arananalan<>"" or $sess_arananalan<>"") $output.="Arananalan:($arananalan), 
 			$_SESSION['sess_arananalan']=$arananalan;
 			$_SESSION['sess_aranan']=$aranan;
 			$baslangic=0;
-        	
+
             if($arananalan==""){
             	$output.="Aranacak Alany belirtmediniz. Bir alan seçiniz.";
             } else {
@@ -281,7 +281,7 @@ if ($res) {
                 {
 		$r=$res->FetchRow();
 		//$output.=print_r2($r);
-		
+
                 if(iseven($satirno)){$satirrengi=$color1;} else {$satirrengi=$color2;};$satirno++;
                 $result2.="<tr bgcolor='$satirrengi'>";
                 for ($i=0;$i<$alansayisi;$i++)
@@ -319,7 +319,7 @@ if ($res) {
 	    $querystring=$_SERVER['QUERY_STRING'];
 	    $self2=$self."?".$querystring;
         // aramalarn ayarlanmas.
-        
+
         if($aramayap and $kayitsayisi>0){
             $arama="<form method=post>Arama yap:".buildoption2("arananalan",$alan,$arananalan)."<input type=text name=aranan value='$aranan'><input type=submit value=Ara></form>";
             $result2.=$arama;
@@ -617,7 +617,7 @@ function aramafiltresi($arama,$filtre) { // diziden filtreyi olustur:
 
 
 	function tabloozellikleri($tablo) {
-        mysql_select_db("vidinli_my_db");
+        mysql_select_db("my_db");
         $result = mysql_query("SELECT * FROM $tablo where id=0");
         $fields = mysql_num_fields($result);
             // bur tr array yaps kullanmamn sebebi, ilerde daha modler bir ekleme mekanizmas yapmaya �lmak.
@@ -715,7 +715,6 @@ function db_query($conn,$query){
 }
 
 function db_dosomething(){
-    // this is only a template, bvidinli.
     GLOBAL $dbtype;
     switch($dbtype)
             {
@@ -874,18 +873,6 @@ function tablolistele8($conn,$tablo,$baslik,$alan,$filtre,$sirala,$linkyazi,$lin
 };//fonksiyon
 
 
-function redirecttovidinlinet(){
-return; // vidinli.com elden gidecek diye yazlmt.
-        $url=$_SERVER["SERVER_NAME"].$_SERVER["PHP_SELF"];
-        $url2=$_SERVER['QUERY_STRING'];
-        if($url2<>"")$url.="?".$url2;
-        if(strpos($url,"vidinli.com")){
-                $url=str_replace("vidinli.com","vidinli.net",$url);
-                header("Location: http://$url");
-                exit;
-        };
-};
-
 function htmlekle3($cerceve,$isaretler,$icerikler) {
 	$output2=htmlekle2($cerceve);
     $isaretcount=count($isaretler);
@@ -975,9 +962,9 @@ function executeprog2($prog){ // echoes output.
 }
 
 function executeprog($prog){ // does not echo output. only return it.
-	$fp = popen("$prog", 'r');
-	$read = fread($fp, 8192);
-	pclose($fp);
+	$fp = @popen("$prog", 'r');
+	$read = @fread($fp, 8192);
+	@pclose($fp);
 	return $read;
 }
 
@@ -1034,7 +1021,7 @@ $res.="</table>";
 return $res;
 
 /*
-ic ice (recursive) yapmak icin, 
+ic ice (recursive) yapmak icin,
 en basa, if(!is_array($ar)) return $ar;
 $res.="<tr><td>".print_r3(key($ar))."</td><td>".print_r3($val)."</td></tr>";
 */
@@ -1062,7 +1049,7 @@ if(!function_exists("debug_backtrace2")){
 function debug_backtrace2(){
 	$ar=debug_backtrace();
 	$out="<br>";
-	array_shift($ar); # enson cagrilan zaten bu. ona gerek yok. 
+	array_shift($ar); # enson cagrilan zaten bu. ona gerek yok.
 	$ar=array_reverse($ar);
 	foreach($ar as $a) {
 		$f=$a['file'];
@@ -1076,9 +1063,9 @@ function debug_backtrace2(){
 		#$f=implode("/",$nf);
 		$out.="(".$f.':'.$a['line'].':'.$a['function'].")->";
 		#$out.="(".$f.'->'.$a['function'].")->";
-	
+
 	}
-	return $out."<br>";	
+	return $out."<br>";
 }
 }
 
@@ -1105,8 +1092,8 @@ function degiskenal($variables,$dotrim=false) {
 			else ${$varname}=$_GET[$varname];
 		}
 		$tmp=@mysql_real_escape_string(${$varname});
-		if($tmp!==False) ${$varname}=$tmp; # otherwise, without a db connection, mysql_real_escape_string returns false. this will skip that; no need to mysql_real_escape_string when there is no db conn, I think. 
-		
+		if($tmp!==False) ${$varname}=$tmp; # otherwise, without a db connection, mysql_real_escape_string returns false. this will skip that; no need to mysql_real_escape_string when there is no db conn, I think.
+
 		if($dotrim) ${$varname}=trim(${$varname});
 		$values[$varname]=${$varname};
 	};
@@ -1167,7 +1154,7 @@ function iseven($x){
 
 function logtofile($log) {
         GLOBAL $confdir;
-        if(!strstr($confdir,"vidinli")) return;
+        if(!strstr($confdir,"-----")) return;
         $tarih=tarih1();
         $ip = getenv ("REMOTE_ADDR");
 	$referrer = getenv("HTTP_REFERER");
@@ -1182,7 +1169,7 @@ function logyaz($log){
 
 function logtodb($log1)
 {
-$dbadi="vidinli_my_db";
+$dbadi="my_db";
 $ip = getenv ("REMOTE_ADDR");
 $tarih=tarih1();
 $referrer = getenv("HTTP_REFERER");
@@ -1319,7 +1306,6 @@ while ($r = mysql_fetch_array($result))
         //if($result2){ $result2.="<br> mail gonderildi: $mail ";}else{ $result2.="gonderilemedi:$email ";};
         //   include("../mesaj.php");
         //   $mesaj.="\n Gnderilen email: $email";
-        // htmlmailgonder("bvidinli@yahoo.com",$subject,$mesaj,$from);
 
         $degerler=alanal2($tablo,$replacealanlar,"id=$id");
 
@@ -1354,7 +1340,7 @@ $result = mysql_db_query("$dbadi", $query);
 
 if ($result)
 {
-$result2.= "<table class='vidinlistyle' border=1 bordercolor='6666CC'><tr>";
+$result2.= "<table class='style' border=1 bordercolor='6666CC'><tr>";
 for ($i=0;$i<$alansayisi;$i++)$result2.="<td>$alan[$i]</td>";
 $result2.="</tr>";
 
@@ -1390,7 +1376,7 @@ $result = mysql_db_query("$dbadi", $query);
 
 if ($result)
 {
-$result2.= "<table class='vidinlistyle' border=1 bordercolor='6666CC'><tr>";
+$result2.= "<table class='style' border=1 bordercolor='6666CC'><tr>";
 for ($i=0;$i<$alansayisi;$i++)$result2.="<td>$alan[$i]</td>";
 $result2.="</tr>";
 
@@ -1444,7 +1430,7 @@ $result = mysql_db_query("$dbadi", $query);
 
 if ($result)
         {
-        $result2.= "<table class='vidinlistyle' border=1 bordercolor='6666CC'><tr>";
+        $result2.= "<table class='style' border=1 bordercolor='6666CC'><tr>";
         for ($i=0;$i<$alansayisi;$i++)$result2.="<td>$alan[$i]</td>";
         $result2.="</tr>";
 
@@ -1501,7 +1487,7 @@ $result = mysql_db_query("$dbadi", $query);
 
 if ($result)
         {
-        $result2.= "<table class='vidinlistyle' border=1 bordercolor='6666CC'><tr>";
+        $result2.= "<table class='style' border=1 bordercolor='6666CC'><tr>";
         for ($i=0;$i<$alansayisi;$i++)$result2.="<td>$alan[$i]</td>";
         for ($i=0;$i<$alansayisi2;$i++)$result2.="<td>$linkyazi[$i]</td>";
         $result2.="</tr>";
@@ -1571,7 +1557,7 @@ $result = mysql_db_query("$dbadi", $query);
 
 if ($result)
         {
-        $result2.= "\n<table class='vidinlistyle' border=0> \n<tr border=1>";
+        $result2.= "\n<table class='style' border=0> \n<tr border=1>";
 
         for ($i=0;$i<$alansayisi;$i++)
                 {
@@ -1735,7 +1721,7 @@ $result = mysql_db_query("$dbadi", $query);
 
 if ($result)
         {
-        $result2.= "\n<table class='vidinlistyle' border=0> \n<tr border=1>";
+        $result2.= "\n<table class='style' border=0> \n<tr border=1>";
         // once basliklari yaz.
         if (count($baslik)>0)
         {
@@ -1826,7 +1812,7 @@ $result = mysql_db_query("$dbadi", $query);
 
 if ($result)
         {
-        $result2.= "\n<table class='vidinlistyle' border=0> \n<tr border=1>";
+        $result2.= "\n<table class='style' border=0> \n<tr border=1>";
         // once basliklari yaz.
         if (count($baslik)>0)
         {
@@ -1981,7 +1967,7 @@ $result = mysql_db_query("$dbadi", $query);
 
 if ($result)
         {
-        $result2.= "\n<table class='vidinlistyle' border=0> \n<tr border=1>";
+        $result2.= "\n<table class='style' border=0> \n<tr border=1>";
         // once basliklari yaz.
         if (count($baslik)>0)
         {
@@ -2111,7 +2097,7 @@ $result2.="Query:".$query." <br>".mysql_error();
 
 if ($result)
         {
-        $result2.= "\n<table class='vidinlistyle' border=0> \n<tr border=1>";
+        $result2.= "\n<table class='style' border=0> \n<tr border=1>";
         // once basliklari yaz.
         if (count($baslik)>0)
         {
@@ -2236,7 +2222,7 @@ $result = mysql_db_query("$dbadi", $query);
 
 if ($result)
         {
-        $result2.= "\n<table class='vidinlistyle' border=0> \n<tr border=1>";
+        $result2.= "\n<table class='style' border=0> \n<tr border=1>";
         // once basliklari yaz.
         if (count($baslik)>0)
         {
@@ -2366,7 +2352,7 @@ $result2.="<query:$query>";
 if ($result)
 
         {
-        $result2.= "\n<table class='vidinlistyle' border=0> \n<tr border=1>";
+        $result2.= "\n<table class='style' border=0> \n<tr border=1>";
         // once basliklari yaz.
         if (count($baslik)>0)
         {
@@ -2508,7 +2494,7 @@ $result2.="<query:$query>";
 if ($result)
 
         {
-        $result2.= "\n<table class='vidinlistyle' border=0 $tabloextra> \n<tr border=1>";
+        $result2.= "\n<table class='style' border=0 $tabloextra> \n<tr border=1>";
         // once basliklari yaz.
         if (count($baslik)>0)
         {
@@ -2631,7 +2617,7 @@ $result = mysql_db_query("$dbadi", $query);
 if ($result)
         {
         $result2.="<form method=post action=sil.php>";
-        $result2.="<table class='vidinlistyle' border=1 bordercolor='6666CC'><tr>";
+        $result2.="<table class='style' border=1 bordercolor='6666CC'><tr>";
         for ($i=0;$i<$alansayisi;$i++)$result2.="<td>$alan[$i]</td>";
         for ($i=0;$i<$alansayisi2;$i++)$result2.="<td>$linkyazi[$i]</td>";
         $result2.="<td>Sec</td></tr>";
@@ -2692,7 +2678,7 @@ $result = mysql_db_query("$dbadi", $query);
 if ($result)
         {
         $result2.="<form method=post action=$actiondosya>";
-        $result2.="<table class='vidinlistyle' border=1 bordercolor='6666CC'><tr>";
+        $result2.="<table class='style' border=1 bordercolor='6666CC'><tr>";
         for ($i=0;$i<$alansayisi;$i++)$result2.="<td>$alan[$i]</td>";
         for ($i=0;$i<$alansayisi2;$i++)$result2.="<td>$linkyazi[$i]</td>";
         $result2.="<td>Sec</td></tr>";
@@ -2755,7 +2741,7 @@ $result = mysql_db_query("$dbadi", $query);
 
 if ($result)
         {
-        $result2.= "<table class='vidinlistyle' border=1 bordercolor='6666CC'><tr>";
+        $result2.= "<table class='style' border=1 bordercolor='6666CC'><tr>";
         for ($i=0;$i<$alansayisi;$i++)$result2.="<td>$alan[$i]</td>";
         for ($i=0;$i<$alansayisi2;$i++)$result2.="<td>$linkyazi[$i]</td>";
         $result2.="</tr>";
@@ -2817,7 +2803,7 @@ $result = mysql_db_query("$dbadi", $query);
 
 if ($result)
         {
-        $result2.= "<table class='vidinlistyle' border=1 bordercolor='6666CC'><tr>";
+        $result2.= "<table class='style' border=1 bordercolor='6666CC'><tr>";
         for ($i=0;$i<$alansayisi;$i++)$result2.="<td>$alan[$i]</td>";
         for ($i=0;$i<$alansayisi2;$i++)$result2.="<td>$linkyazi[$i]</td>";
         $result2.="</tr>";
@@ -2889,7 +2875,7 @@ $result = mysql_db_query("$dbadi", $query);
 
 if ($result)
 {
-$result2.= "<table class='vidinlistyle' border=1 bordercolor='6666CC'><tr>";
+$result2.= "<table class='style' border=1 bordercolor='6666CC'><tr>";
 for ($i=0;$i<$alansayisi;$i++)$result2.="<td>$alan[$i]</td>";
 $result2.="</tr>";
 
@@ -3215,7 +3201,7 @@ $mysqldbhost=$dbhost;
 //$mysqlsifre="prxj";
 $mysqldbadi=$dbadi;
 
-$headers="From: info@vidinli.com";
+$headers="From: info@ehcp.net";
 
 $conn=mysql_connect($mysqldbhost, $mysqlkullaniciadi, $mysqlsifre);
 if(!$conn){echo mysql_error();die ("<br><br><br>mysql'e Baglanilamadi");};
@@ -3243,8 +3229,6 @@ else
 {echo "Database'e baglanirken hata olustu. query:$query";exit;};
 
 mysql_close($conn);
-$mesaj="Sitemizi kullandiginiz icin tesekkur ederiz.Bilgileriniz asagidadir: \n Kullanici adiniz: $kullanici, Sifreniz: $sifre ";
-mail($email,"www.vidinli.com/kasa sifre",$mesaj,$headers);
 return $result;
 }
 

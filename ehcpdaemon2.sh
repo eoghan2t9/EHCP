@@ -7,7 +7,7 @@ echo "running ehcp daemon in shell background..."
 function check_program(){
 		php -l $1
 		if [ $? -ne 0 ] ; then
-			echo "ehcp -> programda hata var: $1" | sendmail "bvidinli@gmail.com"
+			echo "ehcp -> programda hata var: $1" | sendmail "ehcpdeveloper@gmail.com"
 		fi
 }
 
@@ -21,7 +21,7 @@ function check_programs(){
 			echo "Error - Hata : $i " 
 			echo "ehcp -> programda hata var: $i   " > email
 			php -l $i 2>&1 >> email			
-			cat email | sendmail "bvidinli@gmail.com"
+			cat email | sendmail "ehcpdeveloper@gmail.com"
 
 			let hatasayisi=hatasayisi+1
 			if [ $hatasayisi > 5 ] ; then
@@ -40,12 +40,18 @@ function check_programs(){
 }
 
 
-while true
-do
+# Changed the way this works by using a function that respawns the php script if it exits.
+# Changed by:  earnolmartin@gmail.com
+function startPHPDaemon(){
+	cd /var/www/new/ehcp
+	until php index.php daemon ; do
+	echo "Server php index.php daemon crashed with exit code -1.  Respawning..." >&2
+	sleep 3
+	done
+	startPHPDaemon
+}
 cd /var/www/new/ehcp
 check_programs
 
-php index.php daemon
-sleep 20
-done
-
+# Start the initial loop
+startPHPDaemon
